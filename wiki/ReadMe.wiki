@@ -16,7 +16,7 @@ Transmission has recently introduced a RPC architecture in which it launches an 
 
 == How does it work? ==
 
-It does this by providing a wrapper class `TransmissionClient`, an instance of which represents a locally running `transmission-daemon` and provides wrapper methods to (most of) the RPC methods listed in the [http://transmission.m0k.org/trac/browser/trunk/misc/ipcproto.txt specification].
+It does this by providing a wrapper class `TransmissionClient`, an instance of which represents a locally running `transmission-daemon` and provides wrapper methods to (most of) the RPC methods listed in the [http://transmission.m0k.org/trac/browser/trunk/doc/ipcproto.txt specification].
 
 == Usage ==
 
@@ -131,7 +131,7 @@ And here for ''info'':
 
 }}}
 
-Detailed explanations of the meaning and format of the values returned for the keys mentioned above can be found in the [http://transmission.m0k.org/trac/browser/trunk/misc/ipcproto.txt specification] and are not within the scope of this documentation. Just mentally substitute all occurrences of `('foo', 'bar')` with `['foo', 'bar']` as it uses (Python) tuples to represent lists.
+Detailed explanations of the meaning and format of the values returned for the keys mentioned above can be found in the [http://transmission.m0k.org/trac/browser/trunk/doc/ipcproto.txt specification] and are not within the scope of this documentation. Just mentally substitute all occurrences of `('foo', 'bar')` with `['foo', 'bar']` as it uses (Python) tuples to represent lists.
 
 Calling `get_info` and `get_status` for non-existing ids raises an exception:
 
@@ -186,7 +186,7 @@ Being paranoid, we verify this explicitly:
 
 === Operations on all torrents ===
 
-The [http://transmission.m0k.org/trac/browser/trunk/misc/ipcproto.txt specification] allows for operations on an arbitrary number of torrents by supplying a list of ids. For the sake of simplicity the Python wrapper supports only operations on single torrents or on ''all'' torrents at once. In order to test for that, let's first turn autostart off and add some more torrents:
+The [http://transmission.m0k.org/trac/browser/trunk/doc/ipcproto.txt specification] allows for operations on an arbitrary number of torrents by supplying a list of ids. For the sake of simplicity the Python wrapper supports only operations on single torrents or on ''all'' torrents at once. In order to test for that, let's first turn autostart off and add some more torrents:
 
 {{{
 
@@ -370,7 +370,7 @@ Let's look at `get_port` for example. Since we're running this test against an a
 
 }}}
 
-All of the aforementioned set methods provide the new value upon return, so testing the set method implicitely also tests the getter:
+All of the aforementioned set methods provide True upon return for success.
 
 {{{
 
@@ -379,7 +379,7 @@ True
 
 }}}
 
-For completeness sake, an ''explicit'' Test of the get method:
+An explicit test confirms this:
 
 {{{
 
@@ -393,7 +393,7 @@ Finally, we clean up after ourselves and reset (and verify) the original value.
 {{{
 
 >>> self.failUnlessEqual(daemon.set_port(initial_value), True)
->>> daemon.get_port() == 9091
+>>> daemon.get_port() == initial_value
 True
 
 }}}
@@ -404,6 +404,7 @@ The remaining methods are tested in a more compact fashion:
 
 >>> init_downlimit = self.daemon.get_downlimit()
 >>> self.failUnlessEqual(self.daemon.set_downlimit(200), True)
+>>> self.failUnlessEqual(self.daemon.get_downlimit(), 200)
 >>> self.failUnlessEqual(self.daemon.set_downlimit(init_downlimit), True)
 
 }}}
@@ -412,6 +413,7 @@ The remaining methods are tested in a more compact fashion:
 
 >>> init_uplimit = self.daemon.get_uplimit()
 >>> self.failUnlessEqual(self.daemon.set_uplimit(200), True)
+>>> self.failUnlessEqual(self.daemon.get_uplimit(), 200)
 >>> self.failUnlessEqual(self.daemon.set_uplimit(init_uplimit), True)
 
 }}}
@@ -420,7 +422,9 @@ The remaining methods are tested in a more compact fashion:
 
 >>> init_autostart = self.daemon.get_autostart()
 >>> self.failUnlessEqual(self.daemon.set_autostart(True), True)
+>>> self.failUnlessEqual(self.daemon.get_autostart(), True)
 >>> self.failUnlessEqual(self.daemon.set_autostart(False), True)
+>>> self.failUnlessEqual(self.daemon.get_autostart(), False)
 >>> self.failUnlessEqual(self.daemon.set_autostart(init_autostart), True)
 
 }}}
@@ -429,7 +433,9 @@ The remaining methods are tested in a more compact fashion:
 
 >>> init_automap = self.daemon.get_automap()
 >>> self.failUnlessEqual(self.daemon.set_automap(True), True)
+>>> self.failUnlessEqual(self.daemon.get_automap(), True)
 >>> self.failUnlessEqual(self.daemon.set_automap(False), True)
+>>> self.failUnlessEqual(self.daemon.get_automap(), False)
 >>> self.failUnlessEqual(self.daemon.set_automap(init_automap), True)
 
 }}}
@@ -438,11 +444,12 @@ The remaining methods are tested in a more compact fashion:
 
 >>> init_directory = self.daemon.get_directory()
 >>> self.failUnlessEqual(self.daemon.set_directory("/tmp/foo"), True)
+>>> self.failUnlessEqual(self.daemon.get_directory(), "/tmp/foo")
 >>> self.failUnlessEqual(self.daemon.set_directory(init_directory), True)
 
 }}}
 
-For a more detailed explanation refer to the [http://transmission.m0k.org/trac/browser/trunk/misc/ipcproto.txt specification].
+For a more detailed explanation refer to the [http://transmission.m0k.org/trac/browser/trunk/doc/ipcproto.txt specification].
 
 == Dependencies ==
 
